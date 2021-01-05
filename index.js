@@ -1,40 +1,25 @@
-const http = require('http');
-const url = require('url');
+const Express = require('express');
+const app = Express();
 
-function handler(req, res) {
-    res.writeHead(200, {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': '*',
-        'Access-Control-Allow-Headers': '*'
-    });
+app.use(Express.json());
+app.use(Express.urlencoded({ extended: false }));
 
-    const {method} = req;
+app.post("/add", (req, res) => {
+    let operation = req.body;
+    res.send((operation.operandA + operation.operandB).toString());
+    res.status(201)
+})
 
-    if(method === 'POST') {
-        console.log('Handling POST Request!');
+app.post("/divide", (req, res) => {
+    let operation = req.body;
+    res.send((operation.operandA / operation.operandB).toString());
+    res.status(201)
+})
 
-        const {pathname} = url.parse(req.url);
+app.post("/multiply", (req, res) => {
+    let operation = req.body;
+    res.send((operation.operandA * operation.operandB).toString());
+    res.status(201)
+})
 
-        if(pathname === '/add') {
-
-            var rawBody = "";
-            req.on('data', chunk => {
-                rawBody += chunk.toString();
-            });
-            req.on('end', () => {
-                const {operandA,operandB} = JSON.parse(rawBody);
-                const result = operandA + operandB;
-                res.write(JSON.stringify({
-                    result
-                }));
-                res.end();
-            });
-
-        }
-
-    } else {
-        res.end();
-    }
-}
-
-http.createServer(handler).listen(8080);
+app.listen(8080, () => { });
